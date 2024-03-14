@@ -1,0 +1,154 @@
+from src.domain.exceptions import StudentException,RepositoryException,AssignmentException
+from random import randint
+
+ZERO_INDEX=0
+ONE_INDEX=1
+TEN_INDEX=10
+
+
+class StudentRepository:
+    def __init__(self):
+        self.__list_of_students=[]
+
+    def __len__(self):
+        return len(self.__list_of_students)
+
+    def add(self,new_student):
+        for student in self.__list_of_students:
+            if student.student_id==new_student.student_id:
+                raise StudentException("Student already exists!")
+        self.__list_of_students.append(new_student)
+        return new_student
+
+    def get_student_by_id(self,student_id):
+        for student in self.__list_of_students:
+            if student.student_id==student_id:
+                return student
+        return None
+
+    def get_all_students(self):
+        return self.__list_of_students[:]
+
+    def get_random_id(self):
+        return self.__list_of_students[randint(ZERO_INDEX, len(self.__list_of_students) - ONE_INDEX)].student_id
+
+    def remove_student(self,student_id):
+        if len(self.__list_of_students)==ZERO_INDEX:
+            raise RepositoryException("The list is empty")
+        for student in self.__list_of_students:
+            if student.student_id==student_id:
+                self.__list_of_students.remove(student)
+                return student
+        return None
+
+    def update(self,student_id,new_name,new_group):
+        student=self.get_student_by_id(student_id)
+        if student is None:
+            raise RepositoryException("Student does not exist")
+        student.name=new_name
+        student.group=new_group
+        return student.name,student.group
+
+
+class AssignmentRepository:
+    def __init__(self):
+        self.__list_of_assignments=[]
+
+    def __len__(self):
+        return len(self.__list_of_assignments)
+
+    def add(self,new_assignment):
+        for assignment in self.__list_of_assignments:
+            if assignment.assignment_id==new_assignment.assignment_id:
+                raise AssignmentException("This assignment already exists")
+        self.__list_of_assignments.append(new_assignment)
+        return new_assignment
+
+    def get_all_assignments(self):
+        return self.__list_of_assignments[:]
+
+    def get_assignment_by_id(self,assignment_id):
+        for assignment in self.__list_of_assignments:
+            if assignment.assignment_id==assignment_id:
+                return assignment
+        return None
+
+    def remove_assignment(self,assignment_id):
+        if len(self.__list_of_assignments)==ZERO_INDEX:
+            raise RepositoryException("The list is already empty")
+        for assignment in self.__list_of_assignments:
+            if assignment.assignment_id==assignment_id:
+                self.__list_of_assignments.remove(assignment)
+                return assignment
+        return None
+
+    def update(self,assignment_id,new_description,new_deadline):
+        assignment=self.get_assignment_by_id(assignment_id)
+        if assignment is None:
+            raise RepositoryException("This assignment does not exits")
+        assignment.description=new_description
+        assignment.deadline=new_deadline
+        return assignment.description,assignment.deadline
+
+    def get_random_id(self):
+        return self.__list_of_assignments[randint(ZERO_INDEX, len(self.__list_of_assignments) - ONE_INDEX)].assignment_id
+
+class GradeRepository:
+    def __init__(self):
+        self.__grade_list=[]
+
+    def add(self,new_grade):
+        for grade in self.__grade_list:
+            if grade.student_id==new_grade.student_id:
+                if grade.assignment_id==new_grade.assignment_id:
+                    raise RepositoryException("The assignment was given to this student")
+        self.__grade_list.append(new_grade)
+
+    def get_grades_list(self):
+        return self.__grade_list[:]
+
+    def __len__(self):
+        return len(self.__grade_list)
+
+    def remove(self,student_id,assignment_id):
+        if len(self.__grade_list)==ZERO_INDEX:
+            raise RepositoryException("The list is empty")
+        found=False
+        for grade in self.__grade_list:
+            if grade.student_id==student_id:
+                if grade.assignment_id==assignment_id:
+                    found=True
+                    self.__grade_list.remove(grade)
+        if found is False:
+            raise RepositoryException("This assign wasnt given to this student")
+
+    def search_if_grade_exists(self, student_id, assignment_id):
+        for grade in self.__grade_list:
+            if grade.student_id == student_id:
+                if grade.assignment_id == assignment_id:
+                    return True
+                else:
+                    return False
+
+    def remove_last_grades(self, number_of_grades):
+        for index in range(number_of_grades):
+            last = self.__grade_list.pop()
+
+    def grade(self, student_id, assignment_id, grade):
+        if int(grade) < ZERO_INDEX:
+            raise ValueError("Grade can't be negative.")
+        elif int(grade) > TEN_INDEX:
+            raise ValueError("Grade must be an integer between 1 and 10.")
+        else:
+            index = ZERO_INDEX
+            while index in range(len(self.__grade_list)):
+                if self.__grade_list[index].student_id == student_id:
+                    if self.__grade_list[index].assignment_id == assignment_id:
+                        if self.__grade_list[index].grade_value== ZERO_INDEX:
+                            self.__grade_list[index].grade_value= grade
+                        elif grade == ZERO_INDEX:
+                            self.__grade_list[index].grade_value= grade
+                        else:
+                            raise RepositoryException("This student has already been graded for this assignment.")
+                index += ONE_INDEX
+

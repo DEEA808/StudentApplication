@@ -1,0 +1,33 @@
+
+import unittest
+from datetime import date
+from src.domain.entity import Student
+from src.repository.repo import StudentRepository
+from src.repository.repo import AssignmentRepository
+from src.domain.entity import Assignment
+from src.repository.repo import GradeRepository
+from src.domain.entity import Grade
+
+class TestRepository_Student(unittest.TestCase):
+    def setUp(self) -> None:
+        self.__repo=StudentRepository()
+    def test_add(self):
+        student=Student(2345,'Andreea', 916)
+        self.__repo.add(student)
+        self.assertEqual(len(self.__repo.get_all_students()),1)
+
+class TestRepository_Assignment(unittest.TestCase):
+    def setUp(self) -> None:
+        self.__repo=AssignmentRepository()
+    def test_add(self):
+        assignment=Assignment(11,'Biology',date(2020,3,2))
+        self.__repo.add(assignment)
+        self.assertEqual(len(self.__repo.get_all_assignments()),1)
+
+class Test_Repository_Grade(unittest.TestCase):
+    def setUp(self) -> None:
+        self.__repo=GradeRepository()
+    def add(self):
+        grade=Grade(11,2345,10)
+        self.__repo.add(grade)
+        self.assertEqual(len(self.__repo.get_grades_list()),1)
